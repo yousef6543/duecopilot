@@ -1,0 +1,18 @@
+# Phase 4 — Locals & Reminders (Follow-up Copilot)
+
+Mechanism: WorkManager (OneTimeWorkRequest). Chosen because exact-alarm permission (SCHEDULE_EXACT_ALARM) not requested; avoids Android 13+ restriction complexity. Limitation: reminder occurs within OS scheduling window, not guaranteed to the exact clock second.
+
+Permissions required:
+- POST_NOTIFICATIONS (Android 13+)
+- FOREGROUND_SERVICE (not added — WorkManager avoids need)
+- No exact-alarm permission requested (documented limitation)
+
+Reconciliation:
+- DB reminder updated → WorkManager rescheduled (REPLACE)
+- Reminder disabled/deleted → cancel unique work
+- Invoice paid → recommendations exclude; user cancels reminder manually (no auto-cancel implemented to avoid data loss)
+- DB authoritative; restore after reboot via DB re-read
+
+Time zone: system default (ZoneId.systemDefault()), persistent as Long epoch ms.
+
+Tests: ReminderEngineTest + persistence via Room DAO.
