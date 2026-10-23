@@ -30,7 +30,10 @@ jobs:
           gradle-version: '8.2'
 
       - name: Check Android Manifest
-        run: gradle :app:processDebugMainManifest --stacktrace --info
+  run: |
+    gradle :app:processDebugMainManifest --stacktrace --info > manifest-log.txt 2>&1 || true
+    grep -n -i -E -C 3 'error:|fatal|Caused by:|lineNumber|SAXParseException|ManifestMerger' manifest-log.txt | tail -80 || tail -40 manifest-log.txt
+    exit 1
 
       - name: Build debug APK
         run: gradle :app:assembleDebug
