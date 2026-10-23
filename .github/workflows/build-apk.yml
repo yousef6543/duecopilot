@@ -1,7 +1,7 @@
 
 name: Build DuePilot APK
 
-'on':
+on:
   workflow_dispatch:
   push:
     branches:
@@ -13,6 +13,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
@@ -28,8 +29,11 @@ jobs:
         with:
           gradle-version: '8.2'
 
-    - name: Build debug APK
-  run: gradle :app:processDebugMainManifest --stacktrace --info
+      - name: Check Android Manifest
+        run: gradle :app:processDebugMainManifest --stacktrace --info
+
+      - name: Build debug APK
+        run: gradle :app:assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
